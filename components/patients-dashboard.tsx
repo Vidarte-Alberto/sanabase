@@ -10,12 +10,14 @@ import { PatientDetail } from "@/components/patient-detail"
 import { DeleteConfirmDialog } from "@/components/delete-confirm-dialog"
 import { SearchBar } from "@/components/search-bar"
 import { StatsCards } from "@/components/stats-cards"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { usePatients } from "@/hooks/use-patients"
 import { toast } from "sonner"
-import { UserPlus, Users, LayoutGrid, List } from "lucide-react"
+import { UserPlus, Users, LayoutGrid, List, Shield } from "lucide-react"
 import type { Patient, PatientFormData } from "@/lib/types"
 import { Spinner } from "@/components/ui/spinner"
 import type { AuthSession } from "@/lib/auth-types"
+import { UsersManagement } from "@/components/users-management"
 
 type ViewMode = "list" | "detail" | "form"
 
@@ -32,6 +34,7 @@ export function PatientsDashboard({ session }: PatientsDashboardProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [listStyle, setListStyle] = useState<"grid" | "list">("grid")
   const canDeletePatients = session.role === "admin"
+  const canManageUsers = session.role === "admin"
 
   const filteredPatients = useMemo(() => {
     if (!searchQuery.trim()) return patients
@@ -152,7 +155,7 @@ export function PatientsDashboard({ session }: PatientsDashboardProps) {
     )
   }
 
-  return (
+  const patientsContent = (
     <div className="space-y-6">
       {/* Stats */}
       <StatsCards patients={patients} />
@@ -267,5 +270,28 @@ export function PatientsDashboard({ session }: PatientsDashboardProps) {
         onConfirm={handleConfirmDelete}
       />
     </div>
+  )
+
+  if (!canManageUsers) {
+    return patientsContent
+  }
+
+  return (
+    <Tabs defaultValue="patients" className="space-y-4">
+      <TabsList>
+        <TabsTrigger value="patients">
+          <Users className="h-4 w-4" />
+          Pacientes
+        </TabsTrigger>
+        <TabsTrigger value="users">
+          <Shield className="h-4 w-4" />
+          Usuarios
+        </TabsTrigger>
+      </TabsList>
+      <TabsContent value="patients">{patientsContent}</TabsContent>
+      <TabsContent value="users">
+        <UsersManagement session={session} />
+      </TabsContent>
+    </Tabs>
   )
 }
