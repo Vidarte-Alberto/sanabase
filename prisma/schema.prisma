@@ -37,3 +37,13 @@ model User {
 
   @@map("users")
 }
+
+model LoginRateLimit {
+  key            String @id
+  failedAttempts Int
+  blockedUntil   String?
+  createdAt      String
+  lastUpdated    String
+
+  @@map("login_rate_limits")
+}

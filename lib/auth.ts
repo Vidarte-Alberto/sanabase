@@ -7,11 +7,17 @@ import { jwtVerify, SignJWT } from "jose"
 import type { AuthSession } from "@/lib/auth-types"
 import { prisma } from "@/lib/prisma"
 import { hashPassword, verifyPassword } from "@/lib/password"
+import { validatePasswordStrength } from "@/lib/password-policy"
 
 const SESSION_COOKIE_NAME = "medigest_session"
 const SESSION_DURATION_SECONDS = 60 * 60 * 8
 
-const jwtSecret = process.env.JWT_SECRET ?? "change-this-in-production"
+const jwtSecret = process.env.JWT_SECRET ?? ""
+
+if (jwtSecret.length < 32) {
+  throw new Error("JWT_SECRET debe tener al menos 32 caracteres")
+}
+
 const secretKey = new TextEncoder().encode(jwtSecret)
 
 function buildSessionToken(session: AuthSession) {
@@ -41,6 +47,12 @@ export async function createInitialAdmin(input: {
     throw new Error("El onboarding inicial ya fue completado")
   }
 
+  const passwordValidation = validatePasswordStrength(input.password)
+
+  if (!passwordValidation.isValid) {
+    throw new Error(passwordValidation.errors[0])
+  }
+
   const now = new Date().toISOString()
   const user = await prisma.user.create({
     data: {
@@ -65,7 +77,7 @@ export async function createInitialAdmin(input: {
 export async function authenticateUser(username: string, password: string): Promise<AuthSession | null> {
   const user = await prisma.user.findUnique({
     where: {
-      username,
+      username: username.trim(),
     },
   })
 

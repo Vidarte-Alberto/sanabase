@@ -5,6 +5,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client"
 
 import { prisma } from "@/lib/prisma"
 import { hashPassword } from "@/lib/password"
+import { validatePasswordStrength } from "@/lib/password-policy"
 import type { UserRole } from "@/lib/auth-types"
 import type { CreateUserInput, ManagedUser, UpdateUserInput } from "@/lib/user-types"
 
@@ -36,12 +37,17 @@ export async function listUsers(): Promise<ManagedUser[]> {
 
 export async function createUser(input: CreateUserInput): Promise<ManagedUser> {
   const now = new Date().toISOString()
+  const passwordValidation = validatePasswordStrength(input.password)
+
+  if (!passwordValidation.isValid) {
+    throw new Error(passwordValidation.errors[0])
+  }
 
   try {
     const user = await prisma.user.create({
       data: {
         id: randomUUID(),
-        username: input.username,
+        username: input.username.trim(),
         displayName: input.displayName,
         role: input.role,
         passwordHash: await hashPassword(input.password),
@@ -91,6 +97,14 @@ export async function updateUser(
 
   if (existingUser.id === currentUserId && input.role !== "admin") {
     throw new Error("No puedes quitarte a ti mismo el rol de administrador")
+  }
+
+  if (input.password) {
+    const passwordValidation = validatePasswordStrength(input.password)
+
+    if (!passwordValidation.isValid) {
+      throw new Error(passwordValidation.errors[0])
+    }
   }
 
   try {
