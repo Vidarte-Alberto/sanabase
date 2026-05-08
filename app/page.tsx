@@ -1,18 +1,18 @@
-import { redirect } from "next/navigation"
+import { redirect } from "next/navigation";
 
-import { Header } from "@/components/layout"
-import { PatientsDashboard } from "@/components/pages/dashboard"
-import { getSession, hasUsers } from "@/shared/lib/auth"
+import { Header } from "@/components/layout";
+import { PatientsDashboard } from "@/components/pages/dashboard";
+import { getSession, hasUsers } from "@/shared/lib/auth";
 
 export default async function HomePage() {
-  const session = await getSession()
+  const session = await getSession();
 
   if (!(await hasUsers())) {
-    redirect("/onboarding")
+    redirect("/onboarding");
   }
 
   if (!session) {
-    redirect("/login")
+    redirect("/login");
   }
 
   return (
@@ -30,5 +30,5 @@ export default async function HomePage() {
         <PatientsDashboard session={session} />
       </main>
     </div>
-  )
+  );
 }

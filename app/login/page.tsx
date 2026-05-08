@@ -1,18 +1,18 @@
-import { redirect } from "next/navigation"
+import { redirect } from "next/navigation";
 
-import { LoginForm } from "@/components/pages/login"
-import { getSession, hasUsers } from "@/shared/lib/auth"
+import { LoginForm } from "@/components/pages/login";
+import { getSession, hasUsers } from "@/shared/lib/auth";
 
 export default async function LoginPage() {
-  const session = await getSession()
+  const session = await getSession();
 
   if (session) {
-    redirect("/")
+    redirect("/");
   }
 
   if (!(await hasUsers())) {
-    redirect("/onboarding")
+    redirect("/onboarding");
   }
 
-  return <LoginForm />
+  return <LoginForm />;
 }

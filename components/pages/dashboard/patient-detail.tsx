@@ -1,12 +1,5 @@
-"use client"
+"use client";
 
-import type { Patient } from "./types"
-import { GENDER_LABELS } from "./types"
-
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
 import {
   User,
   Phone,
@@ -21,7 +14,14 @@ import {
   X,
   Pencil,
   Trash2,
-} from "lucide-react"
+} from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+
+import { GENDER_LABELS, type Patient } from "./types";
 
 interface PatientDetailProps {
   patient: Patient
@@ -41,9 +41,9 @@ export function PatientDetail({ patient, onClose, onEdit, onDelete }: PatientDet
       "B-": "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
       "AB+": "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
       "AB-": "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
-    }
-    return colors[type] || "bg-muted text-muted-foreground"
-  }
+    };
+    return colors[type] || "bg-muted text-muted-foreground";
+  };
 
   return (
     <Card className="w-full border-border/50 shadow-lg">
@@ -225,5 +225,5 @@ export function PatientDetail({ patient, onClose, onEdit, onDelete }: PatientDet
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

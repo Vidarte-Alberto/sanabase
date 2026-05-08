@@ -1,22 +1,30 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import type { Patient, PatientFormData } from "./types"
-import { BLOOD_TYPES, GENDER_LABELS, GENDER_OPTIONS } from "./types"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
+import { useState, useEffect } from "react";
+
+import { X, Save, UserPlus } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Spinner } from "@/components/ui/spinner"
-import { X, Save, UserPlus } from "lucide-react"
+} from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
+import { Textarea } from "@/components/ui/textarea";
+
+import {
+  BLOOD_TYPES,
+  GENDER_LABELS,
+  GENDER_OPTIONS,
+  type Patient,
+  type PatientFormData,
+} from "./types";
 
 interface PatientFormProps {
   patient?: Patient
@@ -38,11 +46,11 @@ const initialFormData: PatientFormData = {
   medicalHistory: "",
   consultationReason: "",
   notes: "",
-}
+};
 
 export function PatientForm({ patient, onSubmit, onCancel, isLoading }: PatientFormProps) {
-  const [formData, setFormData] = useState<PatientFormData>(initialFormData)
-  const isEditing = !!patient
+  const [formData, setFormData] = useState<PatientFormData>(initialFormData);
+  const isEditing = !!patient;
 
   useEffect(() => {
     if (patient) {
@@ -59,21 +67,21 @@ export function PatientForm({ patient, onSubmit, onCancel, isLoading }: PatientF
         medicalHistory: patient.medicalHistory,
         consultationReason: patient.consultationReason,
         notes: patient.notes,
-      })
-      return
+      });
+      return;
     }
 
-    setFormData(initialFormData)
-  }, [patient])
+    setFormData(initialFormData);
+  }, [patient]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    await onSubmit(formData)
-  }
+    e.preventDefault();
+    await onSubmit(formData);
+  };
 
   const updateField = <K extends keyof PatientFormData>(field: K, value: PatientFormData[K]) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
-  }
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
   return (
     <Card className="w-full border-border/50 shadow-lg">
@@ -130,15 +138,15 @@ export function PatientForm({ patient, onSubmit, onCancel, isLoading }: PatientF
                   type="date"
                   value={formData.birthDate}
                   onChange={(e) => {
-                    updateField("birthDate", e.target.value)
-                    const birthDate = new Date(e.target.value)
-                    const today = new Date()
-                    let age = today.getFullYear() - birthDate.getFullYear()
-                    const monthDiff = today.getMonth() - birthDate.getMonth()
+                    updateField("birthDate", e.target.value);
+                    const birthDate = new Date(e.target.value);
+                    const today = new Date();
+                    let age = today.getFullYear() - birthDate.getFullYear();
+                    const monthDiff = today.getMonth() - birthDate.getMonth();
                     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
-                      age--
+                      age--;
                     }
-                    updateField("age", age > 0 ? age : 0)
+                    updateField("age", age > 0 ? age : 0);
                   }}
                   required
                   className="mt-1.5"
@@ -178,8 +186,7 @@ export function PatientForm({ patient, onSubmit, onCancel, isLoading }: PatientF
                 <Label htmlFor="bloodType">Tipo de Sangre *</Label>
                 <Select
                   value={formData.bloodType}
-                  onValueChange={(value) =>
-                    updateField("bloodType", value as PatientFormData["bloodType"])
+                  onValueChange={(value) => updateField("bloodType", value as PatientFormData["bloodType"])
                   }
                 >
                   <SelectTrigger className="mt-1.5">
@@ -305,5 +312,5 @@ export function PatientForm({ patient, onSubmit, onCancel, isLoading }: PatientF
         </form>
       </CardContent>
     </Card>
-  )
+  );
 }

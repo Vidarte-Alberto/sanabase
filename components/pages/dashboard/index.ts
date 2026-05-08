@@ -1,1 +1,1 @@
-export { PatientsDashboard } from "./patients-dashboard"
+export { PatientsDashboard } from "./patients-dashboard";

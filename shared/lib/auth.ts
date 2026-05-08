@@ -1,24 +1,27 @@
-import "server-only"
+import "server-only";
 
-import { randomUUID } from "node:crypto"
-import { cookies } from "next/headers"
-import { NextResponse } from "next/server"
-import { jwtVerify, SignJWT } from "jose"
-import type { AuthSession } from "@/shared/lib/auth-types"
-import { prisma } from "@/shared/lib/prisma"
-import { hashPassword, verifyPassword } from "@/shared/lib/password"
-import { validatePasswordStrength } from "@/shared/lib/password-policy"
+import { randomUUID } from "node:crypto";
 
-const SESSION_COOKIE_NAME = "medigest_session"
-const SESSION_DURATION_SECONDS = 60 * 60 * 8
+import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
-const jwtSecret = process.env.JWT_SECRET ?? ""
+import { jwtVerify, SignJWT } from "jose";
+
+import type { AuthSession } from "@/shared/lib/auth-types";
+import { hashPassword, verifyPassword } from "@/shared/lib/password";
+import { validatePasswordStrength } from "@/shared/lib/password-policy";
+import { prisma } from "@/shared/lib/prisma";
+
+const SESSION_COOKIE_NAME = "medigest_session";
+const SESSION_DURATION_SECONDS = 60 * 60 * 8;
+
+const jwtSecret = process.env.JWT_SECRET ?? "";
 
 if (jwtSecret.length < 32) {
-  throw new Error("JWT_SECRET debe tener al menos 32 caracteres")
+  throw new Error("JWT_SECRET debe tener al menos 32 caracteres");
 }
 
-const secretKey = new TextEncoder().encode(jwtSecret)
+const secretKey = new TextEncoder().encode(jwtSecret);
 
 function buildSessionToken(session: AuthSession) {
   return new SignJWT({
@@ -31,11 +34,11 @@ function buildSessionToken(session: AuthSession) {
     .setSubject(session.userId)
     .setIssuedAt()
     .setExpirationTime(`${SESSION_DURATION_SECONDS}s`)
-    .sign(secretKey)
+    .sign(secretKey);
 }
 
 export async function hasUsers() {
-  return (await prisma.user.count()) > 0
+  return (await prisma.user.count()) > 0;
 }
 
 export async function createInitialAdmin(input: {
@@ -44,16 +47,16 @@ export async function createInitialAdmin(input: {
   password: string
 }): Promise<AuthSession> {
   if (await hasUsers()) {
-    throw new Error("El onboarding inicial ya fue completado")
+    throw new Error("El onboarding inicial ya fue completado");
   }
 
-  const passwordValidation = validatePasswordStrength(input.password)
+  const passwordValidation = validatePasswordStrength(input.password);
 
   if (!passwordValidation.isValid) {
-    throw new Error(passwordValidation.errors[0])
+    throw new Error(passwordValidation.errors[0]);
   }
 
-  const now = new Date().toISOString()
+  const now = new Date().toISOString();
   const user = await prisma.user.create({
     data: {
       id: randomUUID(),
@@ -64,14 +67,14 @@ export async function createInitialAdmin(input: {
       createdAt: now,
       lastUpdated: now,
     },
-  })
+  });
 
   return {
     userId: user.id,
     username: user.username,
     displayName: user.displayName,
     role: user.role as AuthSession["role"],
-  }
+  };
 }
 
 export async function authenticateUser(username: string, password: string): Promise<AuthSession | null> {
@@ -79,10 +82,10 @@ export async function authenticateUser(username: string, password: string): Prom
     where: {
       username: username.trim(),
     },
-  })
+  });
 
   if (!user || !(await verifyPassword(password, user.passwordHash))) {
-    return null
+    return null;
   }
 
   return {
@@ -90,12 +93,12 @@ export async function authenticateUser(username: string, password: string): Prom
     username: user.username,
     displayName: user.displayName,
     role: user.role as AuthSession["role"],
-  }
+  };
 }
 
 export async function createSessionCookie(session: AuthSession) {
-  const token = await buildSessionToken(session)
-  const cookieStore = await cookies()
+  const token = await buildSessionToken(session);
+  const cookieStore = await cookies();
 
   cookieStore.set(SESSION_COOKIE_NAME, token, {
     httpOnly: true,
@@ -103,30 +106,30 @@ export async function createSessionCookie(session: AuthSession) {
     secure: process.env.NODE_ENV === "production",
     path: "/",
     maxAge: SESSION_DURATION_SECONDS,
-  })
+  });
 }
 
 export async function clearSessionCookie() {
-  const cookieStore = await cookies()
+  const cookieStore = await cookies();
   cookieStore.set(SESSION_COOKIE_NAME, "", {
     httpOnly: true,
     sameSite: "lax",
     secure: process.env.NODE_ENV === "production",
     path: "/",
     maxAge: 0,
-  })
+  });
 }
 
 export async function getSession(): Promise<AuthSession | null> {
-  const cookieStore = await cookies()
-  const token = cookieStore.get(SESSION_COOKIE_NAME)?.value
+  const cookieStore = await cookies();
+  const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
 
   if (!token) {
-    return null
+    return null;
   }
 
   try {
-    const { payload } = await jwtVerify(token, secretKey)
+    const { payload } = await jwtVerify(token, secretKey);
 
     if (
       typeof payload.userId !== "string" ||
@@ -134,17 +137,17 @@ export async function getSession(): Promise<AuthSession | null> {
       typeof payload.displayName !== "string" ||
       (payload.role !== "admin" && payload.role !== "user")
     ) {
-      return null
+      return null;
     }
 
     const user = await prisma.user.findUnique({
       where: {
         id: payload.userId,
       },
-    })
+    });
 
     if (!user) {
-      return null
+      return null;
     }
 
     return {
@@ -152,22 +155,22 @@ export async function getSession(): Promise<AuthSession | null> {
       username: user.username,
       displayName: user.displayName,
       role: user.role as AuthSession["role"],
-    }
+    };
   } catch {
-    return null
+    return null;
   }
 }
 
 export async function requireSession() {
-  const session = await getSession()
+  const session = await getSession();
 
   if (!session) {
-    return null
+    return null;
   }
 
-  return session
+  return session;
 }
 
 export function createUnauthorizedResponse(message = "No autorizado", status = 401) {
-  return NextResponse.json({ error: message }, { status })
+  return NextResponse.json({ error: message }, { status });
 }

@@ -1,13 +1,14 @@
-import "server-only"
+import "server-only";
 
-import { randomUUID } from "node:crypto"
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client"
+import { randomUUID } from "node:crypto";
 
-import { prisma } from "@/shared/lib/prisma"
-import { hashPassword } from "@/shared/lib/password"
-import { validatePasswordStrength } from "@/shared/lib/password-policy"
-import type { UserRole } from "@/shared/lib/auth-types"
-import type { CreateUserInput, ManagedUser, UpdateUserInput } from "@/shared/server/dashboard/user-types"
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
+
+import type { UserRole } from "@/shared/lib/auth-types";
+import { hashPassword } from "@/shared/lib/password";
+import { validatePasswordStrength } from "@/shared/lib/password-policy";
+import { prisma } from "@/shared/lib/prisma";
+import type { CreateUserInput, ManagedUser, UpdateUserInput } from "@/shared/server/dashboard/user-types";
 
 function toManagedUser(user: {
   id: string
@@ -24,23 +25,23 @@ function toManagedUser(user: {
     role: user.role as UserRole,
     createdAt: user.createdAt,
     lastUpdated: user.lastUpdated,
-  }
+  };
 }
 
 export async function listUsers(): Promise<ManagedUser[]> {
   const users = await prisma.user.findMany({
     orderBy: [{ role: "asc" }, { displayName: "asc" }],
-  })
+  });
 
-  return users.map(toManagedUser)
+  return users.map(toManagedUser);
 }
 
 export async function createUser(input: CreateUserInput): Promise<ManagedUser> {
-  const now = new Date().toISOString()
-  const passwordValidation = validatePasswordStrength(input.password)
+  const now = new Date().toISOString();
+  const passwordValidation = validatePasswordStrength(input.password);
 
   if (!passwordValidation.isValid) {
-    throw new Error(passwordValidation.errors[0])
+    throw new Error(passwordValidation.errors[0]);
   }
 
   try {
@@ -54,15 +55,15 @@ export async function createUser(input: CreateUserInput): Promise<ManagedUser> {
         createdAt: now,
         lastUpdated: now,
       },
-    })
+    });
 
-    return toManagedUser(user)
+    return toManagedUser(user);
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError && error.code === "P2002") {
-      throw new Error("Ese nombre de usuario ya existe")
+      throw new Error("Ese nombre de usuario ya existe");
     }
 
-    throw error
+    throw error;
   }
 }
 
@@ -71,39 +72,39 @@ async function countAdmins() {
     where: {
       role: "admin",
     },
-  })
+  });
 }
 
 export async function updateUser(
   userId: string,
   input: UpdateUserInput,
-  currentUserId: string
+  currentUserId: string,
 ): Promise<ManagedUser> {
   const existingUser = await prisma.user.findUnique({
     where: { id: userId },
-  })
+  });
 
   if (!existingUser) {
-    throw new Error("Usuario no encontrado")
+    throw new Error("Usuario no encontrado");
   }
 
   if (existingUser.role === "admin" && input.role !== "admin") {
-    const adminCount = await countAdmins()
+    const adminCount = await countAdmins();
 
     if (adminCount <= 1) {
-      throw new Error("Debe existir al menos un administrador en el sistema")
+      throw new Error("Debe existir al menos un administrador en el sistema");
     }
   }
 
   if (existingUser.id === currentUserId && input.role !== "admin") {
-    throw new Error("No puedes quitarte a ti mismo el rol de administrador")
+    throw new Error("No puedes quitarte a ti mismo el rol de administrador");
   }
 
   if (input.password) {
-    const passwordValidation = validatePasswordStrength(input.password)
+    const passwordValidation = validatePasswordStrength(input.password);
 
     if (!passwordValidation.isValid) {
-      throw new Error(passwordValidation.errors[0])
+      throw new Error(passwordValidation.errors[0]);
     }
   }
 
@@ -120,40 +121,40 @@ export async function updateUser(
           : {}),
         lastUpdated: new Date().toISOString(),
       },
-    })
+    });
 
-    return toManagedUser(user)
+    return toManagedUser(user);
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError && error.code === "P2002") {
-      throw new Error("Ese nombre de usuario ya existe")
+      throw new Error("Ese nombre de usuario ya existe");
     }
 
-    throw error
+    throw error;
   }
 }
 
 export async function deleteUser(userId: string, currentUserId: string): Promise<void> {
   const existingUser = await prisma.user.findUnique({
     where: { id: userId },
-  })
+  });
 
   if (!existingUser) {
-    throw new Error("Usuario no encontrado")
+    throw new Error("Usuario no encontrado");
   }
 
   if (existingUser.id === currentUserId) {
-    throw new Error("No puedes eliminar tu propio usuario")
+    throw new Error("No puedes eliminar tu propio usuario");
   }
 
   if (existingUser.role === "admin") {
-    const adminCount = await countAdmins()
+    const adminCount = await countAdmins();
 
     if (adminCount <= 1) {
-      throw new Error("No puedes eliminar al último administrador del sistema")
+      throw new Error("No puedes eliminar al último administrador del sistema");
     }
   }
 
   await prisma.user.delete({
     where: { id: userId },
-  })
+  });
 }

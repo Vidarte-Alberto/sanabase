@@ -1,33 +1,35 @@
-"use client"
+"use client";
 
-import { useState, type FormEvent } from "react"
-import { useRouter } from "next/navigation"
-import { Activity, ShieldCheck } from "lucide-react"
-import { toast } from "sonner"
+import { useState, type FormEvent } from "react";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Spinner } from "@/components/ui/spinner"
+import { useRouter } from "next/navigation";
+
+import { Activity, ShieldCheck } from "lucide-react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
 
 export function OnboardingForm() {
-  const router = useRouter()
-  const [displayName, setDisplayName] = useState("")
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const router = useRouter();
+  const [displayName, setDisplayName] = useState("");
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+    event.preventDefault();
 
     if (password !== confirmPassword) {
-      toast.error("Las contraseñas no coinciden")
-      return
+      toast.error("Las contraseñas no coinciden");
+      return;
     }
 
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
       const response = await fetch("/api/auth/onboarding", {
@@ -40,25 +42,25 @@ export function OnboardingForm() {
           username,
           password,
         }),
-      })
+      });
 
-      const payload = (await response.json()) as { error?: string }
+      const payload = (await response.json()) as { error?: string };
 
       if (!response.ok) {
-        throw new Error(payload.error ?? "No se pudo completar la configuración inicial")
+        throw new Error(payload.error ?? "No se pudo completar la configuración inicial");
       }
 
-      toast.success("Administrador creado correctamente")
-      router.push("/")
-      router.refresh()
+      toast.success("Administrador creado correctamente");
+      router.push("/");
+      router.refresh();
     } catch (error) {
       toast.error("Error en la configuración inicial", {
         description: error instanceof Error ? error.message : "Intenta nuevamente.",
-      })
+      });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
@@ -134,5 +136,5 @@ export function OnboardingForm() {
         </CardContent>
       </Card>
     </main>
-  )
+  );
 }

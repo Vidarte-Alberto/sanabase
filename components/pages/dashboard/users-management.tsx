@@ -1,13 +1,12 @@
-"use client"
+"use client";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react"
-import { Pencil, Shield, Trash2, UserPlus, Users } from "lucide-react"
-import { toast } from "sonner"
+import { useEffect, useMemo, useState, type FormEvent } from "react";
 
-import type { AuthSession, UserRole } from "@/shared/lib/auth-types"
-import type { CreateUserInput, ManagedUser, UpdateUserInput } from "@/shared/server/dashboard/user-types"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Pencil, Shield, Trash2, UserPlus, Users } from "lucide-react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -15,18 +14,18 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Empty, EmptyContent, EmptyDescription, EmptyTitle } from "@/components/ui/empty"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+} from "@/components/ui/dialog";
+import { Empty, EmptyContent, EmptyDescription, EmptyTitle } from "@/components/ui/empty";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Spinner } from "@/components/ui/spinner"
+} from "@/components/ui/select";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Table,
   TableBody,
@@ -34,7 +33,9 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
+import type { AuthSession, UserRole } from "@/shared/lib/auth-types";
+import type { CreateUserInput, ManagedUser, UpdateUserInput } from "@/shared/server/dashboard/user-types";
 
 interface UsersManagementProps {
   session: AuthSession
@@ -52,100 +53,99 @@ const initialFormState: UserFormState = {
   displayName: "",
   role: "user",
   password: "",
-}
+};
 
 function roleLabel(role: UserRole) {
-  return role === "admin" ? "Administrador" : "Usuario"
+  return role === "admin" ? "Administrador" : "Usuario";
 }
 
 export function UsersManagement({ session }: UsersManagementProps) {
-  const [users, setUsers] = useState<ManagedUser[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [isSaving, setIsSaving] = useState(false)
-  const [userToDelete, setUserToDelete] = useState<ManagedUser | null>(null)
-  const [editingUser, setEditingUser] = useState<ManagedUser | null>(null)
-  const [isDialogOpen, setIsDialogOpen] = useState(false)
-  const [formState, setFormState] = useState<UserFormState>(initialFormState)
+  const [users, setUsers] = useState<ManagedUser[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [userToDelete, setUserToDelete] = useState<ManagedUser | null>(null);
+  const [editingUser, setEditingUser] = useState<ManagedUser | null>(null);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [formState, setFormState] = useState<UserFormState>(initialFormState);
 
-  const isEditing = !!editingUser
+  const isEditing = !!editingUser;
 
   const sortedUsers = useMemo(
-    () =>
-      [...users].sort((leftUser, rightUser) => {
-        if (leftUser.role !== rightUser.role) {
-          return leftUser.role === "admin" ? -1 : 1
-        }
-
-        return leftUser.displayName.localeCompare(rightUser.displayName)
-      }),
-    [users]
-  )
-
-  async function loadUsers() {
-    setIsLoading(true)
-
-    try {
-      const response = await fetch("/api/users", { cache: "no-store" })
-      const payload = (await response.json()) as ManagedUser[] | { error?: string }
-
-      if (!response.ok) {
-        throw new Error("error" in payload ? payload.error : "No se pudieron cargar los usuarios")
+    () => [...users].sort((leftUser, rightUser) => {
+      if (leftUser.role !== rightUser.role) {
+        return leftUser.role === "admin" ? -1 : 1;
       }
 
-      setUsers(payload as ManagedUser[])
+      return leftUser.displayName.localeCompare(rightUser.displayName);
+    }),
+    [users],
+  );
+
+  async function loadUsers() {
+    setIsLoading(true);
+
+    try {
+      const response = await fetch("/api/users", { cache: "no-store" });
+      const payload = (await response.json()) as ManagedUser[] | { error?: string };
+
+      if (!response.ok) {
+        throw new Error("error" in payload ? payload.error : "No se pudieron cargar los usuarios");
+      }
+
+      setUsers(payload as ManagedUser[]);
     } catch (error) {
       toast.error("Error al cargar usuarios", {
         description: error instanceof Error ? error.message : "Intenta nuevamente.",
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
   }
 
   useEffect(() => {
-    void loadUsers()
-  }, [])
+    void loadUsers();
+  }, []);
 
   const openCreateDialog = () => {
-    setEditingUser(null)
-    setFormState(initialFormState)
-    setIsDialogOpen(true)
-  }
+    setEditingUser(null);
+    setFormState(initialFormState);
+    setIsDialogOpen(true);
+  };
 
   const openEditDialog = (user: ManagedUser) => {
-    setEditingUser(user)
+    setEditingUser(user);
     setFormState({
       username: user.username,
       displayName: user.displayName,
       role: user.role,
       password: "",
-    })
-    setIsDialogOpen(true)
-  }
+    });
+    setIsDialogOpen(true);
+  };
 
   const closeDialog = () => {
-    setIsDialogOpen(false)
-    setEditingUser(null)
-    setFormState(initialFormState)
-  }
+    setIsDialogOpen(false);
+    setEditingUser(null);
+    setFormState(initialFormState);
+  };
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setIsSaving(true)
+    event.preventDefault();
+    setIsSaving(true);
 
     try {
       const requestBody: Partial<CreateUserInput & UpdateUserInput> = {
         displayName: formState.displayName,
         role: formState.role,
-      }
+      };
 
       if (isEditing) {
         if (formState.password.trim()) {
-          requestBody.password = formState.password
+          requestBody.password = formState.password;
         }
       } else {
-        requestBody.username = formState.username
-        requestBody.password = formState.password
+        requestBody.username = formState.username;
+        requestBody.password = formState.password;
       }
 
       const response = await fetch(
@@ -156,64 +156,61 @@ export function UsersManagement({ session }: UsersManagementProps) {
             "Content-Type": "application/json",
           },
           body: JSON.stringify(requestBody),
-        }
-      )
+        },
+      );
 
-      const payload = (await response.json()) as ManagedUser | { error?: string }
+      const payload = (await response.json()) as ManagedUser | { error?: string };
 
       if (!response.ok) {
-        throw new Error("error" in payload ? payload.error : "No se pudo guardar el usuario")
+        throw new Error("error" in payload ? payload.error : "No se pudo guardar el usuario");
       }
 
-      const savedUser = payload as ManagedUser
+      const savedUser = payload as ManagedUser;
 
-      setUsers((currentUsers) =>
-        isEditing
-          ? currentUsers.map((currentUser) =>
-              currentUser.id === savedUser.id ? savedUser : currentUser
-            )
-          : [...currentUsers, savedUser]
-      )
+      setUsers((currentUsers) => (isEditing
+        ? currentUsers.map((currentUser) => (currentUser.id === savedUser.id ? savedUser : currentUser),
+        )
+        : [...currentUsers, savedUser]),
+      );
 
-      toast.success(isEditing ? "Usuario actualizado" : "Usuario creado")
-      closeDialog()
+      toast.success(isEditing ? "Usuario actualizado" : "Usuario creado");
+      closeDialog();
     } catch (error) {
       toast.error("Error al guardar usuario", {
         description: error instanceof Error ? error.message : "Intenta nuevamente.",
-      })
+      });
     } finally {
-      setIsSaving(false)
+      setIsSaving(false);
     }
-  }
+  };
 
   const handleDelete = async () => {
     if (!userToDelete) {
-      return
+      return;
     }
 
     try {
       const response = await fetch(`/api/users/${userToDelete.id}`, {
         method: "DELETE",
-      })
+      });
 
-      const payload = (await response.json()) as { success?: boolean; error?: string }
+      const payload = (await response.json()) as { success?: boolean; error?: string };
 
       if (!response.ok) {
-        throw new Error(payload.error ?? "No se pudo eliminar el usuario")
+        throw new Error(payload.error ?? "No se pudo eliminar el usuario");
       }
 
-      setUsers((currentUsers) =>
-        currentUsers.filter((currentUser) => currentUser.id !== userToDelete.id)
-      )
+      setUsers((currentUsers) => currentUsers.filter((currentUser) => currentUser.id !== userToDelete.id),
+      );
 
-      toast.success("Usuario eliminado")
-      setUserToDelete(null)
+      toast.success("Usuario eliminado");
+      setUserToDelete(null);
     } catch (error) {
       toast.error("Error al eliminar usuario", {
         description: error instanceof Error ? error.message : "Intenta nuevamente.",
-      })
+      });
     }
-  }
+  };
 
   return (
     <div className="space-y-6">
@@ -315,11 +312,10 @@ export function UsersManagement({ session }: UsersManagementProps) {
               <Input
                 id="displayName"
                 value={formState.displayName}
-                onChange={(event) =>
-                  setFormState((currentState) => ({
-                    ...currentState,
-                    displayName: event.target.value,
-                  }))
+                onChange={(event) => setFormState((currentState) => ({
+                  ...currentState,
+                  displayName: event.target.value,
+                }))
                 }
                 required
               />
@@ -329,11 +325,10 @@ export function UsersManagement({ session }: UsersManagementProps) {
               <Input
                 id="username"
                 value={formState.username}
-                onChange={(event) =>
-                  setFormState((currentState) => ({
-                    ...currentState,
-                    username: event.target.value,
-                  }))
+                onChange={(event) => setFormState((currentState) => ({
+                  ...currentState,
+                  username: event.target.value,
+                }))
                 }
                 required
                 disabled={isEditing}
@@ -343,11 +338,10 @@ export function UsersManagement({ session }: UsersManagementProps) {
               <Label htmlFor="role">Rol</Label>
               <Select
                 value={formState.role}
-                onValueChange={(value) =>
-                  setFormState((currentState) => ({
-                    ...currentState,
-                    role: value as UserRole,
-                  }))
+                onValueChange={(value) => setFormState((currentState) => ({
+                  ...currentState,
+                  role: value as UserRole,
+                }))
                 }
               >
                 <SelectTrigger id="role">
@@ -367,11 +361,10 @@ export function UsersManagement({ session }: UsersManagementProps) {
                 id="password"
                 type="password"
                 value={formState.password}
-                onChange={(event) =>
-                  setFormState((currentState) => ({
-                    ...currentState,
-                    password: event.target.value,
-                  }))
+                onChange={(event) => setFormState((currentState) => ({
+                  ...currentState,
+                  password: event.target.value,
+                }))
                 }
                 required={!isEditing}
               />
@@ -414,5 +407,5 @@ export function UsersManagement({ session }: UsersManagementProps) {
         </DialogContent>
       </Dialog>
     </div>
-  )
+  );
 }

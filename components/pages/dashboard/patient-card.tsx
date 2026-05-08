@@ -1,18 +1,5 @@
-"use client"
+"use client";
 
-import type { Patient } from "./types"
-import { GENDER_LABELS } from "./types"
-
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import {
   User,
   Phone,
@@ -24,7 +11,20 @@ import {
   Eye,
   Pencil,
   Trash2,
-} from "lucide-react"
+} from "lucide-react";
+
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+
+import { GENDER_LABELS, type Patient } from "./types";
 
 interface PatientCardProps {
   patient: Patient
@@ -44,9 +44,9 @@ export function PatientCard({ patient, onView, onEdit, onDelete }: PatientCardPr
       "B-": "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
       "AB+": "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
       "AB-": "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
-    }
-    return colors[type] || "bg-muted text-muted-foreground"
-  }
+    };
+    return colors[type] || "bg-muted text-muted-foreground";
+  };
 
   return (
     <Card className="group relative overflow-hidden border-border/50 transition-all duration-200 hover:border-primary/30 hover:shadow-md">
@@ -152,5 +152,5 @@ export function PatientCard({ patient, onView, onEdit, onDelete }: PatientCardPr
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }

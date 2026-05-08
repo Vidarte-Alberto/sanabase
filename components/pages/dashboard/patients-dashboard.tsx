@@ -1,23 +1,26 @@
-"use client"
+"use client";
 
-import { useState, useMemo } from "react"
-import type { Patient, PatientFormData } from "./types"
-import { usePatients } from "./hooks/use-patients"
-import { PatientCard } from "./patient-card"
-import { PatientForm } from "./patient-form"
-import { PatientDetail } from "./patient-detail"
-import { DeleteConfirmDialog } from "./delete-confirm-dialog"
-import { SearchBar } from "./search-bar"
-import { StatsCards } from "./stats-cards"
-import { UsersManagement } from "./users-management"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Empty, EmptyContent, EmptyDescription, EmptyTitle } from "@/components/ui/empty"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { toast } from "sonner"
-import { UserPlus, Users, LayoutGrid, List, Shield } from "lucide-react"
-import { Spinner } from "@/components/ui/spinner"
-import type { AuthSession } from "@/shared/lib/auth-types"
+import { useState, useMemo } from "react";
+
+import { UserPlus, Users, LayoutGrid, List, Shield } from "lucide-react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Empty, EmptyContent, EmptyDescription, EmptyTitle } from "@/components/ui/empty";
+import { Spinner } from "@/components/ui/spinner";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import type { AuthSession } from "@/shared/lib/auth-types";
+
+import { DeleteConfirmDialog } from "./delete-confirm-dialog";
+import { usePatients } from "./hooks/use-patients";
+import { PatientCard } from "./patient-card";
+import { PatientDetail } from "./patient-detail";
+import { PatientForm } from "./patient-form";
+import { SearchBar } from "./search-bar";
+import { StatsCards } from "./stats-cards";
+import type { Patient, PatientFormData } from "./types";
+import { UsersManagement } from "./users-management";
 
 type ViewMode = "list" | "detail" | "form"
 
@@ -26,102 +29,101 @@ interface PatientsDashboardProps {
 }
 
 export function PatientsDashboard({ session }: PatientsDashboardProps) {
-  const { patients, isLoading, addPatient, updatePatient, deletePatient } = usePatients()
-  const [viewMode, setViewMode] = useState<ViewMode>("list")
-  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null)
-  const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null)
-  const [searchQuery, setSearchQuery] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [listStyle, setListStyle] = useState<"grid" | "list">("grid")
-  const canDeletePatients = session.role === "admin"
-  const canManageUsers = session.role === "admin"
+  const { patients, isLoading, addPatient, updatePatient, deletePatient } = usePatients();
+  const [viewMode, setViewMode] = useState<ViewMode>("list");
+  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [patientToDelete, setPatientToDelete] = useState<Patient | null>(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [listStyle, setListStyle] = useState<"grid" | "list">("grid");
+  const canDeletePatients = session.role === "admin";
+  const canManageUsers = session.role === "admin";
 
   const filteredPatients = useMemo(() => {
-    if (!searchQuery.trim()) return patients
-    const query = searchQuery.toLowerCase()
+    if (!searchQuery.trim()) return patients;
+    const query = searchQuery.toLowerCase();
     return patients.filter(
-      (p) =>
-        p.fullName.toLowerCase().includes(query) ||
+      (p) => p.fullName.toLowerCase().includes(query) ||
         p.email.toLowerCase().includes(query) ||
-        p.phone.includes(searchQuery)
-    )
-  }, [patients, searchQuery])
+        p.phone.includes(searchQuery),
+    );
+  }, [patients, searchQuery]);
 
   const handleAddNew = () => {
-    setSelectedPatient(null)
-    setViewMode("form")
-  }
+    setSelectedPatient(null);
+    setViewMode("form");
+  };
 
   const handleView = (patient: Patient) => {
-    setSelectedPatient(patient)
-    setViewMode("detail")
-  }
+    setSelectedPatient(patient);
+    setViewMode("detail");
+  };
 
   const handleEdit = (patient: Patient) => {
-    setSelectedPatient(patient)
-    setViewMode("form")
-  }
+    setSelectedPatient(patient);
+    setViewMode("form");
+  };
 
   const handleDelete = (patient: Patient) => {
     if (!canDeletePatients) {
-      toast.error("No tienes permisos para eliminar pacientes")
-      return
+      toast.error("No tienes permisos para eliminar pacientes");
+      return;
     }
 
-    setPatientToDelete(patient)
-  }
+    setPatientToDelete(patient);
+  };
 
   const handleConfirmDelete = async () => {
     if (patientToDelete) {
       try {
-        await deletePatient(patientToDelete.id)
+        await deletePatient(patientToDelete.id);
         toast.success("Paciente eliminado", {
           description: `${patientToDelete.fullName} ha sido eliminado del sistema.`,
-        })
-        setPatientToDelete(null)
+        });
+        setPatientToDelete(null);
         if (selectedPatient?.id === patientToDelete.id) {
-          setViewMode("list")
-          setSelectedPatient(null)
+          setViewMode("list");
+          setSelectedPatient(null);
         }
       } catch (error) {
         toast.error("No se pudo eliminar el paciente", {
           description: error instanceof Error ? error.message : "Intenta nuevamente.",
-        })
+        });
       }
     }
-  }
+  };
 
   const handleFormSubmit = async (data: PatientFormData) => {
-    setIsSubmitting(true)
+    setIsSubmitting(true);
 
     try {
       if (selectedPatient) {
-        await updatePatient(selectedPatient.id, data)
+        await updatePatient(selectedPatient.id, data);
         toast.success("Paciente actualizado", {
           description: `Los datos de ${data.fullName} han sido actualizados.`,
-        })
+        });
       } else {
-        await addPatient(data)
+        await addPatient(data);
         toast.success("Paciente registrado", {
           description: `${data.fullName} ha sido agregado al sistema.`,
-        })
+        });
       }
 
-      setViewMode("list")
-      setSelectedPatient(null)
+      setViewMode("list");
+      setSelectedPatient(null);
     } catch (error) {
       toast.error("No se pudo guardar el paciente", {
         description: error instanceof Error ? error.message : "Intenta nuevamente.",
-      })
+      });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleCancel = () => {
-    setViewMode("list")
-    setSelectedPatient(null)
-  }
+    setViewMode("list");
+    setSelectedPatient(null);
+  };
 
   if (viewMode === "form") {
     return (
@@ -133,7 +135,7 @@ export function PatientsDashboard({ session }: PatientsDashboardProps) {
           isLoading={isSubmitting}
         />
       </div>
-    )
+    );
   }
 
   if (viewMode === "detail" && selectedPatient) {
@@ -152,7 +154,7 @@ export function PatientsDashboard({ session }: PatientsDashboardProps) {
           onConfirm={handleConfirmDelete}
         />
       </div>
-    )
+    );
   }
 
   const patientsContent = (
@@ -270,10 +272,10 @@ export function PatientsDashboard({ session }: PatientsDashboardProps) {
         onConfirm={handleConfirmDelete}
       />
     </div>
-  )
+  );
 
   if (!canManageUsers) {
-    return patientsContent
+    return patientsContent;
   }
 
   return (
@@ -293,5 +295,5 @@ export function PatientsDashboard({ session }: PatientsDashboardProps) {
         <UsersManagement session={session} />
       </TabsContent>
     </Tabs>
-  )
+  );
 }

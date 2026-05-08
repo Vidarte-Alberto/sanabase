@@ -1,25 +1,27 @@
-"use client"
+"use client";
 
-import { useState, type FormEvent } from "react"
-import { useRouter } from "next/navigation"
-import { Activity, LogIn } from "lucide-react"
-import { toast } from "sonner"
+import { useState, type FormEvent } from "react";
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Spinner } from "@/components/ui/spinner"
+import { useRouter } from "next/navigation";
+
+import { Activity, LogIn } from "lucide-react";
+import { toast } from "sonner";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Spinner } from "@/components/ui/spinner";
 
 export function LoginForm() {
-  const router = useRouter()
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const router = useRouter();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setIsSubmitting(true)
+    event.preventDefault();
+    setIsSubmitting(true);
 
     try {
       const response = await fetch("/api/auth/login", {
@@ -28,25 +30,25 @@ export function LoginForm() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ username, password }),
-      })
+      });
 
-      const payload = (await response.json()) as { error?: string }
+      const payload = (await response.json()) as { error?: string };
 
       if (!response.ok) {
-        throw new Error(payload.error ?? "No se pudo iniciar sesión")
+        throw new Error(payload.error ?? "No se pudo iniciar sesión");
       }
 
-      toast.success("Sesión iniciada")
-      router.push("/")
-      router.refresh()
+      toast.success("Sesión iniciada");
+      router.push("/");
+      router.refresh();
     } catch (error) {
       toast.error("Error al iniciar sesión", {
         description: error instanceof Error ? error.message : "Intenta nuevamente.",
-      })
+      });
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-background px-4 py-10">
@@ -96,5 +98,5 @@ export function LoginForm() {
         </CardContent>
       </Card>
     </main>
-  )
+  );
 }

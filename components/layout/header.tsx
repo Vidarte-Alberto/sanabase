@@ -1,10 +1,13 @@
-"use client"
+"use client";
 
-import { useRouter } from "next/navigation"
-import { Activity, LogOut, Menu, Shield, UserRound, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { useState } from "react"
-import type { AuthSession } from "@/shared/lib/auth-types"
+import { useState } from "react";
+
+import { useRouter } from "next/navigation";
+
+import { Activity, LogOut, Menu, Shield, UserRound, X } from "lucide-react";
+
+import { Button } from "@/components/ui/button";
+import type { AuthSession } from "@/shared/lib/auth-types";
 
 interface HeaderProps {
   onMenuToggle?: () => void
@@ -12,23 +15,23 @@ interface HeaderProps {
 }
 
 export function Header({ onMenuToggle, session }: HeaderProps) {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [isLoggingOut, setIsLoggingOut] = useState(false)
-  const router = useRouter()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const router = useRouter();
 
   const handleLogout = async () => {
-    setIsLoggingOut(true)
+    setIsLoggingOut(true);
 
     try {
       await fetch("/api/auth/logout", {
         method: "POST",
-      })
-      router.push("/login")
-      router.refresh()
+      });
+      router.push("/login");
+      router.refresh();
     } finally {
-      setIsLoggingOut(false)
+      setIsLoggingOut(false);
     }
-  }
+  };
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
@@ -39,8 +42,8 @@ export function Header({ onMenuToggle, session }: HeaderProps) {
             size="icon"
             className="md:hidden"
             onClick={() => {
-              setMobileMenuOpen(!mobileMenuOpen)
-              onMenuToggle?.()
+              setMobileMenuOpen(!mobileMenuOpen);
+              onMenuToggle?.();
             }}
           >
             {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -82,5 +85,5 @@ export function Header({ onMenuToggle, session }: HeaderProps) {
         </div>
       </div>
     </header>
-  )
+  );
 }

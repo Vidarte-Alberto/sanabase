@@ -1,35 +1,36 @@
-"use client"
+"use client";
 
-import { useCallback, useEffect, useState } from "react"
-import type { Patient, PatientFormData } from "../types"
+import { useCallback, useEffect, useState } from "react";
+
+import type { Patient, PatientFormData } from "../types";
 
 async function parseResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {
-    const payload = (await response.json().catch(() => null)) as { error?: string } | null
-    throw new Error(payload?.error ?? "No se pudo completar la operación")
+    const payload = (await response.json().catch(() => null)) as { error?: string } | null;
+    throw new Error(payload?.error ?? "No se pudo completar la operación");
   }
 
-  return response.json() as Promise<T>
+  return response.json() as Promise<T>;
 }
 
 export function usePatients() {
-  const [patients, setPatients] = useState<Patient[]>([])
-  const [isLoading, setIsLoading] = useState(true)
+  const [patients, setPatients] = useState<Patient[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const refreshPatients = useCallback(async () => {
-    setIsLoading(true)
+    setIsLoading(true);
 
     try {
-      const data = await parseResponse<Patient[]>(await fetch("/api/patients", { cache: "no-store" }))
-      setPatients(data)
+      const data = await parseResponse<Patient[]>(await fetch("/api/patients", { cache: "no-store" }));
+      setPatients(data);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
-    void refreshPatients()
-  }, [refreshPatients])
+    void refreshPatients();
+  }, [refreshPatients]);
 
   const addPatient = useCallback(async (data: PatientFormData) => {
     const patient = await parseResponse<Patient>(
@@ -39,12 +40,12 @@ export function usePatients() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
-      })
-    )
+      }),
+    );
 
-    setPatients((currentPatients) => [patient, ...currentPatients])
-    return patient
-  }, [])
+    setPatients((currentPatients) => [patient, ...currentPatients]);
+    return patient;
+  }, []);
 
   const updatePatient = useCallback(async (id: string, data: PatientFormData) => {
     const patient = await parseResponse<Patient>(
@@ -54,43 +55,38 @@ export function usePatients() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
-      })
-    )
+      }),
+    );
 
-    setPatients((currentPatients) =>
-      currentPatients.map((currentPatient) => (currentPatient.id === id ? patient : currentPatient))
-    )
+    setPatients((currentPatients) => currentPatients.map((currentPatient) => (currentPatient.id === id ? patient : currentPatient)),
+    );
 
-    return patient
-  }, [])
+    return patient;
+  }, []);
 
   const deletePatient = useCallback(async (id: string) => {
     await parseResponse<{ success: boolean }>(
       await fetch(`/api/patients/${id}`, {
         method: "DELETE",
-      })
-    )
+      }),
+    );
 
-    setPatients((currentPatients) =>
-      currentPatients.filter((currentPatient) => currentPatient.id !== id)
-    )
+    setPatients((currentPatients) => currentPatients.filter((currentPatient) => currentPatient.id !== id),
+    );
 
-    return true
-  }, [])
+    return true;
+  }, []);
 
-  const getPatient = useCallback((id: string): Patient | undefined => {
-    return patients.find((patient) => patient.id === id)
-  }, [patients])
+  const getPatient = useCallback((id: string): Patient | undefined => patients.find((patient) => patient.id === id), [patients]);
 
   const searchPatients = useCallback((query: string) => {
-    const lowerQuery = query.toLowerCase()
+    const lowerQuery = query.toLowerCase();
     return patients.filter(
-      (patient) =>
-        patient.fullName.toLowerCase().includes(lowerQuery) ||
+      (patient) => patient.fullName.toLowerCase().includes(lowerQuery) ||
         patient.email.toLowerCase().includes(lowerQuery) ||
-        patient.phone.includes(query)
-    )
-  }, [patients])
+        patient.phone.includes(query),
+    );
+  }, [patients]);
 
   return {
     patients,
@@ -101,5 +97,5 @@ export function usePatients() {
     deletePatient,
     getPatient,
     searchPatients,
-  }
+  };
 }

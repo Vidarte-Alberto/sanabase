@@ -1,9 +1,9 @@
-import "server-only"
+import "server-only";
 
-import { prisma } from "@/shared/lib/prisma"
+import { prisma } from "@/shared/lib/prisma";
 
-const MAX_FAILED_ATTEMPTS = 5
-const BLOCK_DURATION_MS = 15 * 60 * 1000
+const MAX_FAILED_ATTEMPTS = 5;
+const BLOCK_DURATION_MS = 15 * 60 * 1000;
 const loginRateLimitClient = prisma as typeof prisma & {
   loginRateLimit: {
     findUnique: typeof prisma.$extends extends never
@@ -48,31 +48,31 @@ const loginRateLimitClient = prisma as typeof prisma & {
       }
     }) => Promise<unknown>
   }
-}
+};
 
 function nowIso() {
-  return new Date().toISOString()
+  return new Date().toISOString();
 }
 
 function blockedUntilIso() {
-  return new Date(Date.now() + BLOCK_DURATION_MS).toISOString()
+  return new Date(Date.now() + BLOCK_DURATION_MS).toISOString();
 }
 
 function normalizeIdentifier(identifier: string) {
-  return identifier.trim().toLowerCase()
+  return identifier.trim().toLowerCase();
 }
 
 export async function getRateLimitStatus(identifier: string) {
-  const key = normalizeIdentifier(identifier)
+  const key = normalizeIdentifier(identifier);
   const rateLimit = await loginRateLimitClient.loginRateLimit.findUnique({
     where: { key },
-  })
+  });
 
   if (!rateLimit || !rateLimit.blockedUntil) {
-    return { isBlocked: false as const, blockedUntil: null }
+    return { isBlocked: false as const, blockedUntil: null };
   }
 
-  const isBlocked = new Date(rateLimit.blockedUntil).getTime() > Date.now()
+  const isBlocked = new Date(rateLimit.blockedUntil).getTime() > Date.now();
 
   if (!isBlocked) {
     await loginRateLimitClient.loginRateLimit.update({
@@ -82,20 +82,20 @@ export async function getRateLimitStatus(identifier: string) {
         blockedUntil: null,
         lastUpdated: nowIso(),
       },
-    })
+    });
   }
 
   return {
     isBlocked,
     blockedUntil: isBlocked ? rateLimit.blockedUntil : null,
-  }
+  };
 }
 
 export async function registerFailedLogin(identifier: string) {
-  const key = normalizeIdentifier(identifier)
+  const key = normalizeIdentifier(identifier);
   const existingRateLimit = await loginRateLimitClient.loginRateLimit.findUnique({
     where: { key },
-  })
+  });
 
   if (!existingRateLimit) {
     await loginRateLimitClient.loginRateLimit.create({
@@ -106,11 +106,11 @@ export async function registerFailedLogin(identifier: string) {
         createdAt: nowIso(),
         lastUpdated: nowIso(),
       },
-    })
-    return
+    });
+    return;
   }
 
-  const failedAttempts = existingRateLimit.failedAttempts + 1
+  const failedAttempts = existingRateLimit.failedAttempts + 1;
 
   await loginRateLimitClient.loginRateLimit.update({
     where: { key },
@@ -119,11 +119,11 @@ export async function registerFailedLogin(identifier: string) {
       blockedUntil: failedAttempts >= MAX_FAILED_ATTEMPTS ? blockedUntilIso() : null,
       lastUpdated: nowIso(),
     },
-  })
+  });
 }
 
 export async function clearFailedLogins(identifier: string) {
-  const key = normalizeIdentifier(identifier)
+  const key = normalizeIdentifier(identifier);
 
   await loginRateLimitClient.loginRateLimit.upsert({
     where: { key },
@@ -139,9 +139,9 @@ export async function clearFailedLogins(identifier: string) {
       createdAt: nowIso(),
       lastUpdated: nowIso(),
     },
-  })
+  });
 }
 
 export function buildRateLimitKeys(username: string, ipAddress: string) {
-  return [`user:${normalizeIdentifier(username)}`, `ip:${normalizeIdentifier(ipAddress)}`]
+  return [`user:${normalizeIdentifier(username)}`, `ip:${normalizeIdentifier(ipAddress)}`];
 }

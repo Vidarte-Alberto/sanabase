@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server"
+import { NextResponse } from "next/server";
 
-import { clearSessionCookie } from "@/shared/lib/auth"
+import { clearSessionCookie } from "@/shared/lib/auth";
 
-export const runtime = "nodejs"
+export const runtime = "nodejs";
 
 export async function POST() {
-  await clearSessionCookie()
-  return NextResponse.json({ success: true })
+  await clearSessionCookie();
+  return NextResponse.json({ success: true });
 }

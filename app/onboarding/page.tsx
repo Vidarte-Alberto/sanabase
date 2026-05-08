@@ -1,18 +1,18 @@
-import { redirect } from "next/navigation"
+import { redirect } from "next/navigation";
 
-import { OnboardingForm } from "@/components/pages/onboarding"
-import { getSession, hasUsers } from "@/shared/lib/auth"
+import { OnboardingForm } from "@/components/pages/onboarding";
+import { getSession, hasUsers } from "@/shared/lib/auth";
 
 export default async function OnboardingPage() {
-  const session = await getSession()
+  const session = await getSession();
 
   if (session) {
-    redirect("/")
+    redirect("/");
   }
 
   if (await hasUsers()) {
-    redirect("/login")
+    redirect("/login");
   }
 
-  return <OnboardingForm />
+  return <OnboardingForm />;
 }

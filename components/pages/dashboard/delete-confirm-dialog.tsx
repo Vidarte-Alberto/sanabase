@@ -1,4 +1,6 @@
-"use client"
+"use client";
+
+import { AlertTriangle } from "lucide-react";
 
 import {
   AlertDialog,
@@ -9,9 +11,9 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { AlertTriangle } from "lucide-react"
-import type { Patient } from "./types"
+} from "@/components/ui/alert-dialog";
+
+import type { Patient } from "./types";
 
 interface DeleteConfirmDialogProps {
   patient: Patient | null
@@ -53,5 +55,5 @@ export function DeleteConfirmDialog({
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }
