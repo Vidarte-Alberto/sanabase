@@ -8,7 +8,7 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'MediGestión - Sistema de Pacientes',
+  title: 'Sanabase - Sistema de Pacientes',
   description: 'Sistema CRUD para almacenamiento y gestión de pacientes de un médico general',
   generator: 'v0.app',
   icons: {

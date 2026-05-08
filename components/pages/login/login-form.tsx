@@ -57,7 +57,7 @@ export function LoginForm() {
               <Activity className="h-5 w-5 text-primary-foreground" />
             </div>
             <div>
-              <CardTitle>MediGestión</CardTitle>
+              <CardTitle>Sanabase</CardTitle>
               <CardDescription>Inicia sesión para continuar</CardDescription>
             </div>
           </div>

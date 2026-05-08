@@ -51,7 +51,7 @@ export function Header({ onMenuToggle, session }: HeaderProps) {
             </div>
             <div className="flex flex-col">
               <span className="text-lg font-semibold leading-tight text-foreground">
-                MediGestión
+                Sanabase
               </span>
               <span className="text-xs text-muted-foreground hidden sm:block">
                 Sistema de Pacientes
