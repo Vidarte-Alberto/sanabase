@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Patient {
+  id                 String @id
+  fullName           String
+  age                Int
+  gender             String
+  birthDate          String
+  phone              String
+  address            String
+  email              String
+  bloodType          String
+  allergies          String
+  medicalHistory     String
+  consultationReason String
+  notes              String
+  registrationDate   String
+  lastUpdated        String
+
+  @@map("patients")
+}
