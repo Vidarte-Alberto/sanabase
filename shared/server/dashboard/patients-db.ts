@@ -1,7 +1,7 @@
 import { randomUUID } from "node:crypto"
 
-import { prisma } from "@/lib/prisma"
-import type { Patient, PatientFormData } from "@/lib/types"
+import { prisma } from "@/shared/lib/prisma"
+import type { Patient, PatientFormData } from "@/components/pages/dashboard/types"
 
 function today() {
   return new Date().toISOString().split("T")[0]

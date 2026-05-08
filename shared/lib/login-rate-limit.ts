@@ -1,6 +1,6 @@
 import "server-only"
 
-import { prisma } from "@/lib/prisma"
+import { prisma } from "@/shared/lib/prisma"
 
 const MAX_FAILED_ATTEMPTS = 5
 const BLOCK_DURATION_MS = 15 * 60 * 1000

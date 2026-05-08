@@ -4,7 +4,7 @@ import { useRouter } from "next/navigation"
 import { Activity, LogOut, Menu, Shield, UserRound, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
-import type { AuthSession } from "@/lib/auth-types"
+import type { AuthSession } from "@/shared/lib/auth-types"
 
 interface HeaderProps {
   onMenuToggle?: () => void

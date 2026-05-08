@@ -1,6 +1,8 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import type { Patient, PatientFormData } from "./types"
+import { BLOOD_TYPES, GENDER_LABELS, GENDER_OPTIONS } from "./types"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -15,8 +17,6 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Spinner } from "@/components/ui/spinner"
 import { X, Save, UserPlus } from "lucide-react"
-import type { Patient, PatientFormData } from "@/lib/types"
-import { BLOOD_TYPES, GENDER_LABELS, GENDER_OPTIONS } from "@/lib/types"
 
 interface PatientFormProps {
   patient?: Patient

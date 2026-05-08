@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server"
 
-import { createUnauthorizedResponse, requireSession } from "@/lib/auth"
-import { createUser, listUsers } from "@/lib/user-management"
-import type { CreateUserInput } from "@/lib/user-types"
+import { createUnauthorizedResponse, requireSession } from "@/shared/lib/auth"
+import { createUser, listUsers } from "@/shared/server/dashboard/user-management"
+import type { CreateUserInput } from "@/shared/server/dashboard/user-types"
 
 export const runtime = "nodejs"
 

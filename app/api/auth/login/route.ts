@@ -1,12 +1,12 @@
 import { NextResponse } from "next/server"
 
-import { authenticateUser, createSessionCookie, hasUsers } from "@/lib/auth"
+import { authenticateUser, createSessionCookie, hasUsers } from "@/shared/lib/auth"
 import {
   buildRateLimitKeys,
   clearFailedLogins,
   getRateLimitStatus,
   registerFailedLogin,
-} from "@/lib/login-rate-limit"
+} from "@/shared/lib/login-rate-limit"
 
 export const runtime = "nodejs"
 

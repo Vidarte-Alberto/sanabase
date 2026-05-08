@@ -1,9 +1,11 @@
 "use client"
 
+import type { Patient } from "./types"
+import { GENDER_LABELS } from "./types"
+
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { GENDER_LABELS } from "@/lib/types"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,7 +25,6 @@ import {
   Pencil,
   Trash2,
 } from "lucide-react"
-import type { Patient } from "@/lib/types"
 
 interface PatientCardProps {
   patient: Patient

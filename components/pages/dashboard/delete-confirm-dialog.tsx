@@ -11,7 +11,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog"
 import { AlertTriangle } from "lucide-react"
-import type { Patient } from "@/lib/types"
+import type { Patient } from "./types"
 
 interface DeleteConfirmDialogProps {
   patient: Patient | null

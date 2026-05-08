@@ -1,7 +1,7 @@
 "use client"
 
 import { useCallback, useEffect, useState } from "react"
-import type { Patient, PatientFormData } from "@/lib/types"
+import type { Patient, PatientFormData } from "../types"
 
 async function parseResponse<T>(response: Response): Promise<T> {
   if (!response.ok) {

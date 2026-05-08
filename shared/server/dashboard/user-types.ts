@@ -1,4 +1,4 @@
-import type { UserRole } from "@/lib/auth-types"
+import type { UserRole } from "@/shared/lib/auth-types"
 
 export interface ManagedUser {
   id: string

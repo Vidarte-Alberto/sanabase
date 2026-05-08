@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server"
 
-import { createUnauthorizedResponse, requireSession } from "@/lib/auth"
-import { deletePatient, getPatientById, updatePatient } from "@/lib/patients-db"
-import type { PatientFormData } from "@/lib/types"
+import { createUnauthorizedResponse, requireSession } from "@/shared/lib/auth"
+import type { PatientFormData } from "@/components/pages/dashboard/types"
+import { deletePatient, getPatientById, updatePatient } from "@/shared/server/dashboard/patients-db"
 
 export const runtime = "nodejs"
 

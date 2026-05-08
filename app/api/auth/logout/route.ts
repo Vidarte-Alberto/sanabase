@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 
-import { clearSessionCookie } from "@/lib/auth"
+import { clearSessionCookie } from "@/shared/lib/auth"
 
 export const runtime = "nodejs"
 

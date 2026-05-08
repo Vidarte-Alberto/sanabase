@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client"
 
-import { createInitialAdmin, createSessionCookie, hasUsers } from "@/lib/auth"
+import { createInitialAdmin, createSessionCookie, hasUsers } from "@/shared/lib/auth"
 
 export const runtime = "nodejs"
 

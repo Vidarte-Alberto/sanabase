@@ -3,11 +3,11 @@ import "server-only"
 import { randomUUID } from "node:crypto"
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client"
 
-import { prisma } from "@/lib/prisma"
-import { hashPassword } from "@/lib/password"
-import { validatePasswordStrength } from "@/lib/password-policy"
-import type { UserRole } from "@/lib/auth-types"
-import type { CreateUserInput, ManagedUser, UpdateUserInput } from "@/lib/user-types"
+import { prisma } from "@/shared/lib/prisma"
+import { hashPassword } from "@/shared/lib/password"
+import { validatePasswordStrength } from "@/shared/lib/password-policy"
+import type { UserRole } from "@/shared/lib/auth-types"
+import type { CreateUserInput, ManagedUser, UpdateUserInput } from "@/shared/server/dashboard/user-types"
 
 function toManagedUser(user: {
   id: string

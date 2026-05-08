@@ -4,8 +4,8 @@ import { useEffect, useMemo, useState, type FormEvent } from "react"
 import { Pencil, Shield, Trash2, UserPlus, Users } from "lucide-react"
 import { toast } from "sonner"
 
-import type { AuthSession, UserRole } from "@/lib/auth-types"
-import type { CreateUserInput, ManagedUser, UpdateUserInput } from "@/lib/user-types"
+import type { AuthSession, UserRole } from "@/shared/lib/auth-types"
+import type { CreateUserInput, ManagedUser, UpdateUserInput } from "@/shared/server/dashboard/user-types"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {

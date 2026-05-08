@@ -2,7 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card"
 import { Users, UserPlus, Activity, Calendar } from "lucide-react"
-import type { Patient } from "@/lib/types"
+import type { Patient } from "./types"
 
 interface StatsCardsProps {
   patients: Patient[]
