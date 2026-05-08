@@ -29,7 +29,7 @@ interface PatientCardProps {
   patient: Patient
   onView: (patient: Patient) => void
   onEdit: (patient: Patient) => void
-  onDelete: (patient: Patient) => void
+  onDelete?: (patient: Patient) => void
 }
 
 export function PatientCard({ patient, onView, onEdit, onDelete }: PatientCardProps) {
@@ -91,14 +91,18 @@ export function PatientCard({ patient, onView, onEdit, onDelete }: PatientCardPr
                 <Pencil className="mr-2 h-4 w-4" />
                 Editar
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem
-                onClick={() => onDelete(patient)}
-                className="text-destructive focus:text-destructive"
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Eliminar
-              </DropdownMenuItem>
+              {onDelete ? (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => onDelete(patient)}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <Trash2 className="mr-2 h-4 w-4" />
+                    Eliminar
+                  </DropdownMenuItem>
+                </>
+              ) : null}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

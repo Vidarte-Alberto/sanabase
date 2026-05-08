@@ -26,7 +26,7 @@ interface PatientDetailProps {
   patient: Patient
   onClose: () => void
   onEdit: (patient: Patient) => void
-  onDelete: (patient: Patient) => void
+  onDelete?: (patient: Patient) => void
 }
 
 export function PatientDetail({ patient, onClose, onEdit, onDelete }: PatientDetailProps) {
@@ -206,14 +206,16 @@ export function PatientDetail({ patient, onClose, onEdit, onDelete }: PatientDet
             <Button variant="outline" onClick={onClose} className="flex-1 sm:flex-none">
               Cerrar
             </Button>
-            <Button
-              variant="outline"
-              onClick={() => onDelete(patient)}
-              className="flex-1 sm:flex-none text-destructive hover:text-destructive"
-            >
-              <Trash2 className="mr-2 h-4 w-4" />
-              Eliminar
-            </Button>
+            {onDelete ? (
+              <Button
+                variant="outline"
+                onClick={() => onDelete(patient)}
+                className="flex-1 sm:flex-none text-destructive hover:text-destructive"
+              >
+                <Trash2 className="mr-2 h-4 w-4" />
+                Eliminar
+              </Button>
+            ) : null}
             <Button onClick={() => onEdit(patient)} className="flex-1 sm:flex-none">
               <Pencil className="mr-2 h-4 w-4" />
               Editar

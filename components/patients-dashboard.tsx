@@ -15,10 +15,15 @@ import { toast } from "sonner"
 import { UserPlus, Users, LayoutGrid, List } from "lucide-react"
 import type { Patient, PatientFormData } from "@/lib/types"
 import { Spinner } from "@/components/ui/spinner"
+import type { AuthSession } from "@/lib/auth-types"
 
 type ViewMode = "list" | "detail" | "form"
 
-export function PatientsDashboard() {
+interface PatientsDashboardProps {
+  session: AuthSession
+}
+
+export function PatientsDashboard({ session }: PatientsDashboardProps) {
   const { patients, isLoading, addPatient, updatePatient, deletePatient } = usePatients()
   const [viewMode, setViewMode] = useState<ViewMode>("list")
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null)
@@ -26,6 +31,7 @@ export function PatientsDashboard() {
   const [searchQuery, setSearchQuery] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [listStyle, setListStyle] = useState<"grid" | "list">("grid")
+  const canDeletePatients = session.role === "admin"
 
   const filteredPatients = useMemo(() => {
     if (!searchQuery.trim()) return patients
@@ -54,6 +60,11 @@ export function PatientsDashboard() {
   }
 
   const handleDelete = (patient: Patient) => {
+    if (!canDeletePatients) {
+      toast.error("No tienes permisos para eliminar pacientes")
+      return
+    }
+
     setPatientToDelete(patient)
   }
 
@@ -129,7 +140,7 @@ export function PatientsDashboard() {
           patient={selectedPatient}
           onClose={handleCancel}
           onEdit={handleEdit}
-          onDelete={handleDelete}
+          onDelete={canDeletePatients ? handleDelete : undefined}
         />
         <DeleteConfirmDialog
           patient={patientToDelete}
@@ -240,7 +251,7 @@ export function PatientsDashboard() {
                     patient={patient}
                     onView={handleView}
                     onEdit={handleEdit}
-                    onDelete={handleDelete}
+                    onDelete={canDeletePatients ? handleDelete : undefined}
                   />
                 ))}
               </div>
