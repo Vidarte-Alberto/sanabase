@@ -47,3 +47,59 @@ model LoginRateLimit {
 
   @@map("login_rate_limits")
 }
+
+model Consultation {
+  id          String @id
+  patientId   String
+  userId      String
+  date        String
+  reason      String
+  diagnosis   String
+  treatment   String
+  notes       String
+  createdAt   String
+  lastUpdated String
+
+  @@map("consultations")
+}
+
+model Payment {
+  id             String  @id
+  patientId      String
+  userId         String
+  shiftId        String?
+  appointmentId  String?
+  consultationId String?
+  amount         Float
+  concept        String
+  paymentMethod  String
+  date           String
+  createdAt      String
+
+  @@map("payments")
+}
+
+model Shift {
+  id        String  @id
+  userId    String
+  startTime String
+  endTime   String?
+  status    String
+  notes     String
+
+  @@map("shifts")
+}
+
+model Appointment {
+  id          String @id
+  patientId   String
+  userId      String
+  dateTime    String
+  reason      String
+  status      String
+  notes       String
+  createdAt   String
+  lastUpdated String
+
+  @@map("appointments")
+}

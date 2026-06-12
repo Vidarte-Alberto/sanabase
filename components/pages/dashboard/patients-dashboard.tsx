@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 
-import { UserPlus, Users, LayoutGrid, List, Shield } from "lucide-react";
+import { UserPlus, Users, LayoutGrid, List, Shield, Clock, BarChart3, CalendarDays, Receipt } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -12,12 +12,16 @@ import { Spinner } from "@/components/ui/spinner";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { AuthSession } from "@/shared/lib/auth-types";
 
+import { AdminAnalytics } from "./admin-analytics";
+import { AppointmentsList } from "./appointments-list";
+import { CashierPanel } from "./cashier-panel";
 import { DeleteConfirmDialog } from "./delete-confirm-dialog";
 import { usePatients } from "./hooks/use-patients";
 import { PatientCard } from "./patient-card";
 import { PatientDetail } from "./patient-detail";
 import { PatientForm } from "./patient-form";
 import { SearchBar } from "./search-bar";
+import { ShiftPanel } from "./shift-panel";
 import { StatsCards } from "./stats-cards";
 import type { Patient, PatientFormData } from "./types";
 import { UsersManagement } from "./users-management";
@@ -36,8 +40,7 @@ export function PatientsDashboard({ session }: PatientsDashboardProps) {
   const [searchQuery, setSearchQuery] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [listStyle, setListStyle] = useState<"grid" | "list">("grid");
-  const canDeletePatients = session.role === "admin";
-  const canManageUsers = session.role === "admin";
+  const isAdmin = session.role === "admin";
 
   const filteredPatients = useMemo(() => {
     if (!searchQuery.trim()) return patients;
@@ -65,7 +68,7 @@ export function PatientsDashboard({ session }: PatientsDashboardProps) {
   };
 
   const handleDelete = (patient: Patient) => {
-    if (!canDeletePatients) {
+    if (!isAdmin) {
       toast.error("No tienes permisos para eliminar pacientes");
       return;
     }
@@ -143,9 +146,10 @@ export function PatientsDashboard({ session }: PatientsDashboardProps) {
       <div className="mx-auto max-w-3xl">
         <PatientDetail
           patient={selectedPatient}
+          session={session}
           onClose={handleCancel}
           onEdit={handleEdit}
-          onDelete={canDeletePatients ? handleDelete : undefined}
+          onDelete={isAdmin ? handleDelete : undefined}
         />
         <DeleteConfirmDialog
           patient={patientToDelete}
@@ -159,10 +163,8 @@ export function PatientsDashboard({ session }: PatientsDashboardProps) {
 
   const patientsContent = (
     <div className="space-y-6">
-      {/* Stats */}
       <StatsCards patients={patients} />
 
-      {/* Patient List */}
       <Card className="border-border/50">
         <CardHeader className="border-b border-border/50">
           <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -256,7 +258,7 @@ export function PatientsDashboard({ session }: PatientsDashboardProps) {
                     patient={patient}
                     onView={handleView}
                     onEdit={handleEdit}
-                    onDelete={canDeletePatients ? handleDelete : undefined}
+                    onDelete={isAdmin ? handleDelete : undefined}
                   />
                 ))}
               </div>
@@ -274,26 +276,65 @@ export function PatientsDashboard({ session }: PatientsDashboardProps) {
     </div>
   );
 
-  if (!canManageUsers) {
-    return patientsContent;
-  }
-
   return (
-    <Tabs defaultValue="patients" className="space-y-4">
+    <Tabs defaultValue="cashier" className="space-y-4">
       <TabsList>
+        <TabsTrigger value="cashier">
+          <Receipt className="h-4 w-4" />
+          Caja
+        </TabsTrigger>
+        <TabsTrigger value="appointments">
+          <CalendarDays className="h-4 w-4" />
+          Citas
+        </TabsTrigger>
         <TabsTrigger value="patients">
           <Users className="h-4 w-4" />
           Pacientes
         </TabsTrigger>
-        <TabsTrigger value="users">
-          <Shield className="h-4 w-4" />
-          Usuarios
+        <TabsTrigger value="shift">
+          <Clock className="h-4 w-4" />
+          Mi Turno
         </TabsTrigger>
+        {isAdmin && (
+          <>
+            <TabsTrigger value="analytics">
+              <BarChart3 className="h-4 w-4" />
+              Dashboard
+            </TabsTrigger>
+            <TabsTrigger value="users">
+              <Shield className="h-4 w-4" />
+              Usuarios
+            </TabsTrigger>
+          </>
+        )}
       </TabsList>
-      <TabsContent value="patients">{patientsContent}</TabsContent>
-      <TabsContent value="users">
-        <UsersManagement session={session} />
+
+      <TabsContent value="cashier">
+        <CashierPanel patients={patients} />
       </TabsContent>
+
+      <TabsContent value="appointments">
+        <AppointmentsList patients={patients} session={session} />
+      </TabsContent>
+
+      <TabsContent value="patients">{patientsContent}</TabsContent>
+
+      <TabsContent value="shift">
+        <div className="mx-auto max-w-xl">
+          <ShiftPanel />
+        </div>
+      </TabsContent>
+
+      {isAdmin && (
+        <>
+          <TabsContent value="analytics">
+            <AdminAnalytics />
+          </TabsContent>
+          <TabsContent value="users">
+            <UsersManagement session={session} />
+          </TabsContent>
+        </>
+      )}
     </Tabs>
   );
 }

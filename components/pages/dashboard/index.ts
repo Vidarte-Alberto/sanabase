@@ -1,1 +1,9 @@
 export { PatientsDashboard } from "./patients-dashboard";
+export { SecretaryDashboard } from "./secretary-dashboard";
+export { DoctorDashboard } from "./doctor-dashboard";
+export { AdminAnalytics } from "./admin-analytics";
+export { ShiftPanel } from "./shift-panel";
+export { ConsultationsList } from "./consultations-list";
+export { PaymentsList } from "./payments-list";
+export { AppointmentsList } from "./appointments-list";
+export { CashierPanel } from "./cashier-panel";
